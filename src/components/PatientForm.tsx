@@ -1,14 +1,19 @@
 import { useForm } from "react-hook-form"; //libreria para formularios
-import Error from "./error";
+import Error from "./Error";
+import type { DraftPatient } from "../types/type";
+import { usePatientStore } from "../store";
+
+
 export default function PatientForm() {
+  const addPatients = usePatientStore(state => state.addPatients)
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<DraftPatient>();
 
-  const registerPatient = () => {
-    console.log("new patient");
+  const registerPatient = (data:DraftPatient) => {
+    addPatients(data)
   };
   return (
     <div className="md:w-1/2 lg:w-2/5 mx-5">
@@ -42,7 +47,7 @@ export default function PatientForm() {
             })}
           />
 
-          {errors.name && <Error>{errors.name?.message?.toString()}</Error>}
+          {errors.name && <Error>{errors.name.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -62,7 +67,7 @@ export default function PatientForm() {
               },
             })}
           />
-           {errors.caretaker && <Error>{errors.caretaker?.message?.toString()}</Error>}
+           {errors.caretaker && <Error>{errors.caretaker.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -82,7 +87,7 @@ export default function PatientForm() {
                 }
             })}
           />
-           {errors.email && <Error>{errors.email?.message?.toString()}</Error>}
+           {errors.email && <Error>{errors.email.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -97,7 +102,7 @@ export default function PatientForm() {
               required:"The registration date is requiered"
             })}
           />
-           {errors.date && <Error>{errors.date?.message?.toString()}</Error>}
+           {errors.date && <Error>{errors.date.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -108,7 +113,11 @@ export default function PatientForm() {
             id="symptoms"
             className="w-full p-3  border border-gray-100"
             placeholder="Síntomas del paciente"
-          ></textarea>
+            {...register("symptoms", {
+              required:"the symptoms is required"
+            })}
+          />
+           {errors.symptoms && <Error>{errors.symptoms.message}</Error>}
         </div>
 
         <input

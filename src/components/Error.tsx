@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 
 
-
+//Error for form
 
 type ErrorProps = {
     children:ReactNode
