@@ -5,16 +5,36 @@ import { usePatientStore } from "../store";
 
 
 export default function PatientForm() {
+
+  // Importación del hook de Zustand para gestionar el estado de pacientes
+
   const addPatients = usePatientStore(state => state.addPatients)
+
+  /**
+   * Hook de react-hook-form para gestionar el formulario de registro de pacientes.
+   * - register: Se usa para registrar los inputs del formulario.
+   * - handleSubmit: Función que maneja el envío del formulario.
+   * - errors: Contiene los errores de validación de los campos.
+   */
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<DraftPatient>();
 
+/**
+ * Función encargada de registrar un nuevo paciente en el estado global.
+ * @param {DraftPatient} data - Datos del paciente a registrar.
+ * La función llama a addPatients, que actualiza la store de Zustand.
+ */
+
   const registerPatient = (data:DraftPatient) => {
     addPatients(data)
+    reset()
   };
+
+  // REACT HOOK FORM
   return (
     <div className="md:w-1/2 lg:w-2/5 mx-5">
       <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
