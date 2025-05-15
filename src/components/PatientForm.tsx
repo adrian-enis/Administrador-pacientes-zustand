@@ -2,14 +2,16 @@ import { useForm } from "react-hook-form"; //libreria para formularios
 import Error from "./Error";
 import type { DraftPatient } from "../types/type";
 import { usePatientStore } from "../store";
-
+import { useEffect } from "react";
 
 export default function PatientForm() {
-
   // Importación del hook de Zustand para gestionar el estado de pacientes
 
-  const addPatients = usePatientStore(state => state.addPatients)
+  const addPatients = usePatientStore((state) => state.addPatients);
 
+  const activeId = usePatientStore((state) => state.activeId)
+
+  const patients = usePatientStore((state) => state.patients)
   /**
    * Hook de react-hook-form para gestionar el formulario de registro de pacientes.
    * - register: Se usa para registrar los inputs del formulario.
@@ -20,18 +22,30 @@ export default function PatientForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<DraftPatient>();
 
-/**
- * Función encargada de registrar un nuevo paciente en el estado global.
- * @param {DraftPatient} data - Datos del paciente a registrar.
- * La función llama a addPatients, que actualiza la store de Zustand.
- */
+  useEffect(() => {
+    if(activeId){
+      const activePatient = patients.filter(patient => patient.id === activeId)[0];
+      setValue("name", activePatient.name)
+      setValue("caretaker", activePatient.caretaker)
+      setValue("email", activePatient.email)
+      setValue("date", activePatient.date)
+      setValue("symptoms", activePatient.symptoms)
 
-  const registerPatient = (data:DraftPatient) => {
-    addPatients(data)
-    reset()
+    }
+  }, [activeId])
+  /**
+   * Función encargada de registrar un nuevo paciente en el estado global.
+   * @param {DraftPatient} data - Datos del paciente a registrar.
+   * La función llama a addPatients, que actualiza la store de Zustand.
+   */
+
+  const registerPatient = (data: DraftPatient) => {
+    addPatients(data);
+    reset();
   };
 
   // REACT HOOK FORM
@@ -81,13 +95,13 @@ export default function PatientForm() {
             placeholder="Nombre del Propietario"
             {...register("caretaker", {
               required: "owner is required",
-               maxLength: {
+              maxLength: {
                 value: 16,
                 message: "max 16 characters",
               },
             })}
           />
-           {errors.caretaker && <Error>{errors.caretaker.message}</Error>}
+          {errors.caretaker && <Error>{errors.caretaker.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -100,14 +114,14 @@ export default function PatientForm() {
             type="email"
             placeholder="Email de Registro"
             {...register("email", {
-              required:"The email is required",
-                pattern:{
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message:"The email is not valid"
-                }
+              required: "The email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "The email is not valid",
+              },
             })}
           />
-           {errors.email && <Error>{errors.email.message}</Error>}
+          {errors.email && <Error>{errors.email.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -119,10 +133,10 @@ export default function PatientForm() {
             className="w-full p-3  border border-gray-100"
             type="date"
             {...register("date", {
-              required:"The registration date is requiered"
+              required: "The registration date is requiered",
             })}
           />
-           {errors.date && <Error>{errors.date.message}</Error>}
+          {errors.date && <Error>{errors.date.message}</Error>}
         </div>
 
         <div className="mb-5">
@@ -134,10 +148,10 @@ export default function PatientForm() {
             className="w-full p-3  border border-gray-100"
             placeholder="Síntomas del paciente"
             {...register("symptoms", {
-              required:"the symptoms is required"
+              required: "the symptoms is required",
             })}
           />
-           {errors.symptoms && <Error>{errors.symptoms.message}</Error>}
+          {errors.symptoms && <Error>{errors.symptoms.message}</Error>}
         </div>
 
         <input
